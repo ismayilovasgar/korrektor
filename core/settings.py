@@ -61,6 +61,9 @@ REST_FRAMEWORK = {
 ## <== Auth User Model ==>
 AUTH_USER_MODEL = "accounts.User"
 
+## <== Reset Token Timeout ==>
+PASSWORD_RESET_TIMEOUT = 60 * 60 * 24 * 3  # 3 gün (saniye cinsinden)
+
 
 ## <== Simple JWT ==>
 SIMPLE_JWT = {
@@ -182,7 +185,7 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = "ismayilov.asgarr.21@gmail.com"  
-EMAIL_HOST_PASSWORD = "smrtcyvncggtnchw" 
+EMAIL_HOST_USER = "ismayilov.asgarr.21@gmail.com"
+EMAIL_HOST_PASSWORD = "smrtcyvncggtnchw"
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 FRONTEND_URL = "http://localhost:8000/api/accounts/"
