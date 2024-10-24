@@ -19,7 +19,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from ..utils.send_password_reset_email import send_password_reset_email
 from django.contrib.auth.views import PasswordResetConfirmView
-
+from django.utils.http import urlsafe_base64_decode
+from rest_framework.exceptions import ValidationError
+from django.contrib.auth.tokens import default_token_generator
 
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
@@ -50,13 +52,18 @@ class LoginView(APIView):
 
         if user is not None:
             refresh = RefreshToken.for_user(user)
-            user_data = UserSerializer(user).data
+            # user_data = UserSerializer(user).data
+
+            # Access token’ın içine kullanıcı bilgileri gömüyoruz
+            refresh["username"] = user.username
+            refresh["first_name"] = user.first_name
+            refresh["last_name"] = user.last_name
 
             return Response(
                 {
                     "refresh": str(refresh),
                     "access": str(refresh.access_token),
-                    "user": user_data,
+                    # "user": user_data,
                 },
                 status=status.HTTP_200_OK,
             )
@@ -118,16 +125,35 @@ class PasswordResetView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class PasswordResetConfirmView(APIView):
-    def post(self, request):
-        serializer = PasswordResetConfirmSerializer(data=request.data)
+# class PasswordResetConfirmView(APIView):
+class CustomPasswordResetConfirmView(APIView):
+    def post(self, request, uidb64, token):
+        try:
+            # UID'yi çöz ve kullanıcıyı bul
+            uid = urlsafe_base64_decode(uidb64).decode()
+            user = User.objects.get(pk=uid)
+        except (User.DoesNotExist, ValueError, OverflowError):
+            raise ValidationError({"detail": "İstifadəçi tapılmadı."})
+
+        # Token'in geçerli olup olmadığını kontrol et
+        if not default_token_generator.check_token(user, token):
+            raise ValidationError(
+                {"detail": "Token keçərsizdir və ya vaxtı bitmişdir."}
+            )
+
+        # Şifre sıfırlama işlemi için serializer'ı kullan
+        serializer = PasswordResetConfirmSerializer(
+            data=request.data, context={"user": user}
+        )
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(
                 {"detail": "Şifrə uğurla yeniləndi."}, status=status.HTTP_200_OK
             )
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class CustomPasswordResetConfirmView(PasswordResetConfirmView):
-    template_name = "password_reset_confirm.html"
+# class CustomPasswordResetConfirmView(PasswordResetConfirmView):
+#     template_name = "password_reset_confirm.html"
+#     success_url = '/login/'
