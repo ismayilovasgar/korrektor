@@ -8,11 +8,14 @@ from .views import (
     LogoutView,
     BlacklistTokenView,
     PasswordResetView,
-    PasswordResetConfirmView
+    # PasswordResetConfirmView,
+    CustomPasswordResetConfirmView,
 )
+from django.contrib.auth.views import PasswordResetConfirmView
+
 
 urlpatterns = [
-    # 
+    #
     # account
     path("register/", RegisterView.as_view(), name="register"),
     path("login/", LoginView.as_view(), name="login"),
@@ -25,6 +28,17 @@ urlpatterns = [
     path("api/token/blacklist/", BlacklistTokenView.as_view(), name="token_blacklist"),
     #
     # password
-    path('password-reset/', PasswordResetView.as_view(), name='password_reset'),
-    path('password-reset-confirm/', PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    path("password-reset/", PasswordResetView.as_view(), name="password_reset"),
+    # path(
+    #     "password-reset-confirm/",
+    #     PasswordResetConfirmView.as_view(),
+    #     name="password_reset_confirm",
+    # ),
+    #
+    # reset
+    path(
+        "password-reset-confirm/<uidb64>/<token>/",
+        CustomPasswordResetConfirmView.as_view(),
+        name="password_reset_confirm",
+    ),
 ]

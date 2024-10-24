@@ -199,7 +199,9 @@ class PasswordResetSerializer(serializers.Serializer):
 
     def validate_email(self, value):
         if not User.objects.filter(email=value).exists():
-            raise serializers.ValidationError("Bu e-posta ilə istifadəçi tapılmadı.")
+            raise serializers.ValidationError(
+                "Bu e-poçt ünvanı ilə qeydiyyatdan keçən istifadəçi yoxdur."
+            )
         return value
 
 

@@ -17,6 +17,8 @@ from .serializers import (
 from ..models import User
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from ..utils.send_password_reset_email import send_password_reset_email
+from django.contrib.auth.views import PasswordResetConfirmView
 
 
 class RegisterView(generics.CreateAPIView):
@@ -108,7 +110,7 @@ class PasswordResetView(APIView):
         serializer = PasswordResetSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             # E-posta göndərmə funksiyasını burada çağır
-            # Örn: send_password_reset_email(serializer.validated_data['email'])
+            send_password_reset_email(serializer.validated_data["email"])
             return Response(
                 {"detail": "Şifrə sıfırlama e-poçtu göndərildi."},
                 status=status.HTTP_200_OK,
@@ -125,3 +127,7 @@ class PasswordResetConfirmView(APIView):
                 {"detail": "Şifrə uğurla yeniləndi."}, status=status.HTTP_200_OK
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CustomPasswordResetConfirmView(PasswordResetConfirmView):
+    template_name = "password_reset_confirm.html"
