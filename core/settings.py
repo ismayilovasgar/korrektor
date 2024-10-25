@@ -39,17 +39,14 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-
     # my app
     "helpers",
     "contact",
     "accounts",
     "rest_framework",
     "django_filters",
-
     # jwt token authentication
     "rest_framework_simplejwt",
-
     # jwt token blacklist
     "rest_framework_simplejwt.token_blacklist",
 ]
@@ -66,7 +63,7 @@ REST_FRAMEWORK = {
 AUTH_USER_MODEL = "accounts.User"
 
 ## <== Reset Token Timeout ==>
-PASSWORD_RESET_TIMEOUT = 60 * 60 * 24 * 3  # 3 gün (saniye cinsinden)
+PASSWORD_RESET_TIMEOUT = 86400  # 15 dq = 900 san (default saniye cinsinden)
 
 
 ## <== Simple JWT ==>
