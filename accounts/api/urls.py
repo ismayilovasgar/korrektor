@@ -8,6 +8,7 @@ from .views import (
     LogoutView,
     BlacklistTokenView,
     PasswordResetView,
+    UserDetailView,
     # PasswordResetConfirmView,
     CustomPasswordResetConfirmView,
 )
@@ -21,6 +22,7 @@ urlpatterns = [
     path("login/", LoginView.as_view(), name="login"),
     path("users/", ListUserView.as_view(), name="list-user"),
     path("logout/", LogoutView.as_view(), name="logout"),
+    path("user/", UserDetailView.as_view(), name="user-detail"),
     #
     # token
     path("token/", CustomTokenObtainPairView.as_view(), name="token_obtain_pair"),

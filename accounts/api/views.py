@@ -23,6 +23,7 @@ from django.utils.http import urlsafe_base64_decode
 from rest_framework.exceptions import ValidationError
 from django.contrib.auth.tokens import default_token_generator
 
+
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
 
@@ -77,6 +78,15 @@ class ListUserView(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
+
+
+class UserDetailView(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
 
 
 # JWT token almak için görünüm

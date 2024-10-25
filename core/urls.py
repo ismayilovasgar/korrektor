@@ -20,17 +20,23 @@ from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 urlpatterns = [
+    # 
+    # admin panel
     path("admin/", admin.site.urls),
     #
+    # account applications
     path("api/accounts/", include("accounts.api.urls")),
     #
+    # create contact form
     path("api/contact/", include("contact.api.urls")),
+    #
     # OpenAPI şeması
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+    #
     # Swagger dokümantasyonu
-    path(
-        "api/schema/swagger-ui/",
-        SpectacularSwaggerView.as_view(url_name="schema"),
-        name="swagger-ui",
-    ),
+    path("api/schema/swagger-ui/",SpectacularSwaggerView.as_view(url_name="schema"),name="swagger-ui",),
+    #
+    # rest auth google
+    path("api/auth/registration/", include("dj_rest_auth.registration.urls")),
+    path("api/auth/google/", include("allauth.socialaccount.urls"))
 ]

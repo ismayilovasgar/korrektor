@@ -39,29 +39,54 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-
     # my app
     "helpers",
     "contact",
     "accounts",
     "rest_framework",
     "django_filters",
-    'django_extensions',
-    'drf_spectacular',
-
+    "django_extensions",
+    "drf_spectacular",
     # jwt token authentication
     "rest_framework_simplejwt",
-
     # jwt token blacklist
     "rest_framework_simplejwt.token_blacklist",
+    # google auth apps
+    "dj_rest_auth",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",
+    "dj_rest_auth.registration",
+    "rest_framework.authtoken",
 ]
+
+## <== google auth apps ==>
+SITE_ID = 1
+
+REST_USE_JWT = True
+
+SOCIALACCOUNT_PROVIDERS = {
+    "google": {
+        "SCOPE": ["profile", "email"],
+        "AUTH_PARAMS": {"access_type": "online"},
+    }
+}
+
+# Google Client ID ve Secret bilgilerinizi buraya ekleyin
+SOCIALACCOUNT_PROVIDERS["google"]["APP"] = {
+    "client_id": "60263067117-hi3jgokuu3g7qbgfo2rr6t75p25cmc04.apps.googleusercontent.com",
+    "secret": "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",
+    "key": "",
+}
+
 
 ## <== DRF yapılandırması ==>
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
 }
 
@@ -110,6 +135,9 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    #
+    ## <== Google Login ==>
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 ROOT_URLCONF = "core.urls"
