@@ -39,13 +39,17 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+
     # my app
     "helpers",
+    "contact",
     "accounts",
     "rest_framework",
     "django_filters",
+
     # jwt token authentication
     "rest_framework_simplejwt",
+
     # jwt token blacklist
     "rest_framework_simplejwt.token_blacklist",
 ]
@@ -174,6 +178,7 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
