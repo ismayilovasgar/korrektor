@@ -39,18 +39,28 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+
     # my app
     "helpers",
     "contact",
     "accounts",
+    'corrections',
+
+    # drf rest
     "rest_framework",
     "django_filters",
     "django_extensions",
     "drf_spectacular",
+    
+    # swagger ui
+   'drf_yasg',
+
     # jwt token authentication
     "rest_framework_simplejwt",
+
     # jwt token blacklist
     "rest_framework_simplejwt.token_blacklist",
+
     # google auth apps
     "dj_rest_auth",
     "allauth",

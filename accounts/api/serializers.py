@@ -22,6 +22,7 @@ from django.contrib.auth.password_validation import validate_password
 
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
+        ref_name = "CustomRegisterSerializer"
         model = User
         fields = [
             "username",
