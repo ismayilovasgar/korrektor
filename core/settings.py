@@ -67,22 +67,21 @@ INSTALLED_APPS = [
 ]
 
 ## <== google auth apps ==>
-SITE_ID = 1
-
-REST_USE_JWT = True
+SITE_ID = config("SITE_ID", cast=int)                            # SITE_ID'yi tam sayıya dönüştür
+REST_USE_JWT = config("REST_USE_JWT", default=False, cast=bool)  # Boolean dönüşümü
 
 SOCIALACCOUNT_PROVIDERS = {
     "google": {
-        "SCOPE": ["profile", "email"],
-        "AUTH_PARAMS": {"access_type": "online"},
+        "SCOPE": config("GOOGLE_SCOPE"),
+        "AUTH_PARAMS": config("GOOGLE_AUTH_PARAMS"),
     }
 }
 
 # Google Client ID ve Secret bilgilerinizi buraya ekleyin
 SOCIALACCOUNT_PROVIDERS["google"]["APP"] = {
-    "client_id": "60263067117-hi3jgokuu3g7qbgfo2rr6t75p25cmc04.apps.googleusercontent.com",
-    "secret": "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",
-    "key": "",
+    "client_id": config("GOOGLE_CLIENT_ID"),
+    "secret": config("GOOGLE_CLIENT_SECRET"),
+    "key": config("GOOGLE_API_KEY"),
 }
 
 
@@ -96,33 +95,47 @@ REST_FRAMEWORK = {
 }
 
 ## <== Auth User Model ==>
-AUTH_USER_MODEL = "accounts.User"
+AUTH_USER_MODEL = config("AUTH_USER_MODEL")
 
 ## <== Reset Token Timeout ==>
-PASSWORD_RESET_TIMEOUT = 86400  # 15 dq = 900 san (default saniye cinsinden)
+PASSWORD_RESET_TIMEOUT = config("PASSWORD_RESET_TIMEOUT")
 
 
 ## <== Simple JWT ==>
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=int(config('ACCESS_TOKEN_LIFETIME'))),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=int(config('REFRESH_TOKEN_LIFETIME'))),
-    'ROTATE_REFRESH_TOKENS': config('ROTATE_REFRESH_TOKENS', default=False, cast=bool),
-    'BLACKLIST_AFTER_ROTATION': config('BLACKLIST_AFTER_ROTATION', default=False, cast=bool),
-    'UPDATE_LAST_LOGIN': config('UPDATE_LAST_LOGIN', default=False, cast=bool),
-    'ALGORITHM': config('ALGORITHM', default='HS256'),
-    'SIGNING_KEY': config('SIGNING_KEY'),  # Gizli anahtar
-    'SLIDING_TOKEN_LIFETIME': timedelta(minutes=int(config('SLIDING_TOKEN_LIFETIME'))),
-    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=int(config('SLIDING_TOKEN_REFRESH_LIFETIME'))),
-    'USER_ID_FIELD': config('USER_ID_FIELD', default='id'),
-    'USER_ID_CLAIM': config('USER_ID_CLAIM', default='user_id'),
-    'AUTH_HEADER_TYPES': tuple(config('AUTH_HEADER_TYPES', default='Bearer').split(',')),
-    'AUTH_HEADER_NAME': config('AUTH_HEADER_NAME', default='HTTP_AUTHORIZATION'),
-    'AUTH_TOKEN_CLASSES': tuple(config('AUTH_TOKEN_CLASSES', default='rest_framework_simplejwt.tokens.AccessToken').split(',')),
-    'TOKEN_TYPE_CLAIM': config('TOKEN_TYPE_CLAIM', default='token_type'),
-    'TOKEN_USER_CLASS': config('TOKEN_USER_CLASS', default='rest_framework_simplejwt.models.TokenUser'),
-    'JTI_CLAIM': config('JTI_CLAIM', default='jti'),
-    'SLIDING_TOKEN_REFRESH_EXP_CLAIM': config('SLIDING_TOKEN_REFRESH_EXP_CLAIM', default='refresh_exp'),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=int(config("ACCESS_TOKEN_LIFETIME"))),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=int(config("REFRESH_TOKEN_LIFETIME"))),
+    "ROTATE_REFRESH_TOKENS": config("ROTATE_REFRESH_TOKENS", default=False, cast=bool),
+    "BLACKLIST_AFTER_ROTATION": config(
+        "BLACKLIST_AFTER_ROTATION", default=False, cast=bool
+    ),
+    "UPDATE_LAST_LOGIN": config("UPDATE_LAST_LOGIN", default=False, cast=bool),
+    "ALGORITHM": config("ALGORITHM", default="HS256"),
+    "SIGNING_KEY": config("SIGNING_KEY"),  # Gizli anahtar
+    "SLIDING_TOKEN_LIFETIME": timedelta(minutes=int(config("SLIDING_TOKEN_LIFETIME"))),
+    "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(
+        days=int(config("SLIDING_TOKEN_REFRESH_LIFETIME"))
+    ),
+    "USER_ID_FIELD": config("USER_ID_FIELD", default="id"),
+    "USER_ID_CLAIM": config("USER_ID_CLAIM", default="user_id"),
+    "AUTH_HEADER_TYPES": tuple(
+        config("AUTH_HEADER_TYPES", default="Bearer").split(",")
+    ),
+    "AUTH_HEADER_NAME": config("AUTH_HEADER_NAME", default="HTTP_AUTHORIZATION"),
+    "AUTH_TOKEN_CLASSES": tuple(
+        config(
+            "AUTH_TOKEN_CLASSES", default="rest_framework_simplejwt.tokens.AccessToken"
+        ).split(",")
+    ),
+    "TOKEN_TYPE_CLAIM": config("TOKEN_TYPE_CLAIM", default="token_type"),
+    "TOKEN_USER_CLASS": config(
+        "TOKEN_USER_CLASS", default="rest_framework_simplejwt.models.TokenUser"
+    ),
+    "JTI_CLAIM": config("JTI_CLAIM", default="jti"),
+    "SLIDING_TOKEN_REFRESH_EXP_CLAIM": config(
+        "SLIDING_TOKEN_REFRESH_EXP_CLAIM", default="refresh_exp"
+    ),
 }
 ## <== Simple JWT ==>
 
