@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 from datetime import timedelta
 from django.conf import settings
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -22,10 +23,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-fmsa%7_asfdsji%@q%&z%biu&_umw0uia9!%8zt3wk6wd&!+pr"
+SECRET_KEY = config("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config("DEBUG", default=False, cast=bool)
 
 ALLOWED_HOSTS = []
 
@@ -39,28 +40,22 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-
     # my app
     "helpers",
     "contact",
     "accounts",
-    'corrections',
-
+    "corrections",
     # drf rest
     "rest_framework",
     "django_filters",
     "django_extensions",
     "drf_spectacular",
-    
     # swagger ui
-   'drf_yasg',
-
+    "drf_yasg",
     # jwt token authentication
     "rest_framework_simplejwt",
-
     # jwt token blacklist
     "rest_framework_simplejwt.token_blacklist",
-
     # google auth apps
     "dj_rest_auth",
     "allauth",
@@ -108,31 +103,26 @@ PASSWORD_RESET_TIMEOUT = 86400  # 15 dq = 900 san (default saniye cinsinden)
 
 
 ## <== Simple JWT ==>
+
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=50),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
-    "ROTATE_REFRESH_TOKENS": True,
-    "BLACKLIST_AFTER_ROTATION": True,
-    "UPDATE_LAST_LOGIN": False,
-    "ALGORITHM": "HS256",
-    "VERIFYING_KEY": None,
-    "AUDIENCE": None,
-    "ISSUER": None,
-    "JWK_URL": None,
-    "LEEWAY": 0,
-    "AUTH_HEADER_TYPES": ("Bearer",),
-    "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
-    "USER_ID_FIELD": "id",
-    "USER_ID_CLAIM": "user_id",
-    "USER_AUTHENTICATION_RULE": "rest_framework_simplejwt.authentication.default_user_authentication_rule",
-    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
-    "TOKEN_TYPE_CLAIM": "token_type",
-    "TOKEN_USER_CLASS": "rest_framework_simplejwt.models.TokenUser",
-    "JTI_CLAIM": "jti",
-    "SIGNING_KEY": settings.SECRET_KEY,
-    "SLIDING_TOKEN_REFRESH_EXP_CLAIM": "refresh_exp",
-    "SLIDING_TOKEN_LIFETIME": timedelta(minutes=5),
-    "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=int(config('ACCESS_TOKEN_LIFETIME'))),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=int(config('REFRESH_TOKEN_LIFETIME'))),
+    'ROTATE_REFRESH_TOKENS': config('ROTATE_REFRESH_TOKENS', default=False, cast=bool),
+    'BLACKLIST_AFTER_ROTATION': config('BLACKLIST_AFTER_ROTATION', default=False, cast=bool),
+    'UPDATE_LAST_LOGIN': config('UPDATE_LAST_LOGIN', default=False, cast=bool),
+    'ALGORITHM': config('ALGORITHM', default='HS256'),
+    'SIGNING_KEY': config('SIGNING_KEY'),  # Gizli anahtar
+    'SLIDING_TOKEN_LIFETIME': timedelta(minutes=int(config('SLIDING_TOKEN_LIFETIME'))),
+    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=int(config('SLIDING_TOKEN_REFRESH_LIFETIME'))),
+    'USER_ID_FIELD': config('USER_ID_FIELD', default='id'),
+    'USER_ID_CLAIM': config('USER_ID_CLAIM', default='user_id'),
+    'AUTH_HEADER_TYPES': tuple(config('AUTH_HEADER_TYPES', default='Bearer').split(',')),
+    'AUTH_HEADER_NAME': config('AUTH_HEADER_NAME', default='HTTP_AUTHORIZATION'),
+    'AUTH_TOKEN_CLASSES': tuple(config('AUTH_TOKEN_CLASSES', default='rest_framework_simplejwt.tokens.AccessToken').split(',')),
+    'TOKEN_TYPE_CLAIM': config('TOKEN_TYPE_CLAIM', default='token_type'),
+    'TOKEN_USER_CLASS': config('TOKEN_USER_CLASS', default='rest_framework_simplejwt.models.TokenUser'),
+    'JTI_CLAIM': config('JTI_CLAIM', default='jti'),
+    'SLIDING_TOKEN_REFRESH_EXP_CLAIM': config('SLIDING_TOKEN_REFRESH_EXP_CLAIM', default='refresh_exp'),
 }
 ## <== Simple JWT ==>
 
@@ -207,7 +197,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = config("TIME_ZONE", default="UTC")
 
 USE_I18N = True
 
@@ -227,11 +217,11 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 ## <== STMP ==>
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "smtp.gmail.com"
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = "ismayilov.asgarr.21@gmail.com"
-EMAIL_HOST_PASSWORD = "smrtcyvncggtnchw"
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-FRONTEND_URL = "http://localhost:8000/api/accounts/"
+EMAIL_BACKEND = config("EMAIL_BACKEND")
+EMAIL_HOST = config("EMAIL_HOST")
+EMAIL_PORT = config("EMAIL_PORT", cast=int)
+EMAIL_USE_TLS = config("EMAIL_USE_TLS", cast=bool)
+EMAIL_HOST_USER = config("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
+DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL")
+FRONTEND_URL = config("FRONTEND_URL")
