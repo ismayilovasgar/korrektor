@@ -1,0 +1,59 @@
+DEBUG=True
+TIME_ZONE='Asia/Baku'
+SECRET_KEY='django-insecure-fmsa%7_asfdsji%@q%&z%biu&_umw0uia9!%8zt3wk6wd&!+pr'
+
+
+## <== ==>
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = "ismayilov.asgarr.21@gmail.com"
+EMAIL_HOST_PASSWORD = "smrtcyvncggtnchw"
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+FRONTEND_URL = "http://localhost:8000/api/accounts/"
+
+## <== ==>
+ACCESS_TOKEN_LIFETIME=50
+REFRESH_TOKEN_LIFETIME=30
+ROTATE_REFRESH_TOKENS=True
+BLACKLIST_AFTER_ROTATION=True
+UPDATE_LAST_LOGIN=False
+ALGORITHM=HS256
+VERIFYING_KEY=None
+AUDIENCE=None
+ISSUER=None
+JWK_URL=None
+LEEWAY=0
+AUTH_HEADER_TYPES=Bearer
+AUTH_HEADER_NAME=HTTP_AUTHORIZATION
+USER_ID_FIELD=id
+USER_ID_CLAIM=user_id
+USER_AUTHENTICATION_RULE=rest_framework_simplejwt.authentication.default_user_authentication_rule
+AUTH_TOKEN_CLASSES=rest_framework_simplejwt.tokens.AccessToken
+TOKEN_TYPE_CLAIM=token_type
+TOKEN_USER_CLASS=rest_framework_simplejwt.models.TokenUser
+JTI_CLAIM=jti
+SIGNING_KEY=your_secret_key_here
+SLIDING_TOKEN_REFRESH_EXP_CLAIM=refresh_exp
+SLIDING_TOKEN_LIFETIME=5
+SLIDING_TOKEN_REFRESH_LIFETIME=1
+
+
+## <== ==>
+PASSWORD_RESET_TIMEOUT = 86400
+
+## <== ==>
+AUTH_USER_MODEL = "accounts.User"
+
+GOOGLE_CLIENT_ID="60263067117-hi3jgokuu3g7qbgfo2rr6t75p25cmc04.apps.googleusercontent.com"
+GOOGLE_CLIENT_SECRET="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"
+GOOGLE_API_KEY=""
+
+## <== ==>
+GOOGLE_SCOPE='["profile", "email"]'
+GOOGLE_AUTH_PARAMS='{"access_type": "online"}'
+
+## <== ==>
+SITE_ID = 1
+REST_USE_JWT = True
