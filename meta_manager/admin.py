@@ -1,9 +1,9 @@
 from django.contrib import admin
-from .models import SEOSettings
+from .models import SEOModel
 
 # Register your models here.
 
 
-@admin.register(SEOSettings)
+@admin.register(SEOModel)
 class SEOSettingsAdmin(admin.ModelAdmin):
     list_display = ("page_name", "meta_title", "meta_description")
