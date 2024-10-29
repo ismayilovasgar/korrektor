@@ -22,6 +22,9 @@ from django.contrib.auth.views import PasswordResetConfirmView
 from django.utils.http import urlsafe_base64_decode
 from rest_framework.exceptions import ValidationError
 from django.contrib.auth.tokens import default_token_generator
+from django.utils import timezone
+from django.contrib.auth import login
+
 
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
@@ -51,10 +54,29 @@ class LoginView(APIView):
         user = authenticate(request, username=email, password=password)
 
         if user is not None:
+            # Bloklanmış istifadəçini yoxlayın
+            if user.is_blocked:
+                return Response(
+                    {"xəta": "Bu hesab bloklanıb"},
+                    status=status.HTTP_403_FORBIDDEN,
+                )
+
+            # İstifadəçini avtomatik olaraq daxil olunmuş kimi qeyd edin
+            login(request, user)
+
+            # Mövcud tarixi yoxlayın və daily_session sahəsini yeniləyin
+            today = timezone.now().date()
+            if user.last_login and user.last_login.date() == today:
+                user.daily_session += 1
+            else:
+                user.daily_session = 1
+            user.save()
+
+            # Yeni JWT token yarat
             refresh = RefreshToken.for_user(user)
             # user_data = UserSerializer(user).data
 
-            # Access token’ın içine kullanıcı bilgileri gömüyoruz
+            # İstifadəçi məlumatlarını tokenə əlavə edin
             refresh["username"] = user.username
             refresh["first_name"] = user.first_name
             refresh["last_name"] = user.last_name

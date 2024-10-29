@@ -14,6 +14,10 @@ from pathlib import Path
 from datetime import timedelta
 from django.conf import settings
 from decouple import config
+import os
+from celery import Celery
+from celery.schedules import crontab
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -40,22 +44,29 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+
     # my app
     "helpers",
     "contact",
     "accounts",
     "corrections",
+    "meta_manager",
+    
     # drf rest
     "rest_framework",
     "django_filters",
     "django_extensions",
     "drf_spectacular",
+    "django_celery_beat",
+    
     # swagger ui
     "drf_yasg",
     # jwt token authentication
     "rest_framework_simplejwt",
+
     # jwt token blacklist
     "rest_framework_simplejwt.token_blacklist",
+
     # google auth apps
     "dj_rest_auth",
     "allauth",
@@ -230,3 +241,27 @@ EMAIL_HOST_USER = config("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL")
 FRONTEND_URL = config("FRONTEND_URL")
+
+
+## <== Celery ==>
+# os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
+# app = Celery("core")
+# app.config_from_object("django.conf:settings", namespace="CELERY")
+# app.autodiscover_tasks()
+
+## Celery Beat üçün planlaşdırma
+# CELERY_BEAT_SCHEDULE = {
+#     "reset-daily-sessions": {
+#         "task": "accounts.tasks.reset_daily_sessions",
+#         "schedule": crontab(hour=13, minute=47),  # Hər gün saat 00:00-da
+#     },
+# }
+
+
+## <== redis ==>
+# Redis konfiqurasiyası
+# REDIS_HOST = "127.0.0.1"
+# REDIS_PORT = 6380
+
+# # Celery konfiqurasiyası
+# CELERY_BROKER_URL = f"redis://{REDIS_HOST}:{REDIS_PORT}/0"

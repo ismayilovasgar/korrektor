@@ -6,8 +6,11 @@ from .models import Contact
 @admin.register(Contact)
 class ContactAdmin(admin.ModelAdmin):
     list_display = (
-        "__str__",
+        # "__str__",
+        "title",
         "content",
-        "created_at",
+        "first_name",
+        "last_name",
+        # "created_at",
         "updated_at",
     )

@@ -39,34 +39,38 @@ schema_view = get_schema_view(
 urlpatterns = [
     #
     # 
-    # admin panel
+    ## admin panel
     path("admin/", admin.site.urls),
     #
     # 
-    # account applications
+    ## account applications
     path("api/accounts/", include("accounts.api.urls")),
     # 
     # 
-    # create contact form
+    ## create contact form
     path("api/contact/", include("contact.api.urls")),
     #
     # 
-    # corrections
+    ## corrections
     path("api/corrections/", include("corrections.api.urls")),  
     # 
     # 
-    # OpenAPI şeması
+    ## meta_manager
+    path('api/meta/', include('meta_manager.api.urls')),  
+    # 
+    # 
+    ## OpenAPI şeması
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     #
     # 
-    # Swagger dokümantasyonu
+    ## Swagger dokümantasyonu
     path("swagger.json/", schema_view.without_ui(cache_timeout=0), name="schema-json"),
     path("swagger/",schema_view.with_ui("swagger", cache_timeout=0),name="schema-swagger-ui"),
     # path("api/schema/swagger-ui/",SpectacularSwaggerView.as_view(url_name="schema"),name="swagger-ui"),
     path("redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
     #
     # 
-    # rest auth google
+    ## rest auth google
     path("api/auth/registration/", include("dj_rest_auth.registration.urls")),
     path("api/auth/google/", include("allauth.socialaccount.urls")),
 ]

@@ -12,12 +12,23 @@ class MyUserManager(UserManager):
     def _create_user(self, username, email, password, **extra_fields):
         """
         Create and save a user with the given username, email, and password.
+        Verilen istifadəçi adı, e-posta və parol ilə bir istifadəçi yaradın və saxlayın.
         """
         if not username:
-            raise ValueError("The given username must be set")
+            # raise ValueError("The given username must be set")
+            raise ValueError("Verilmiş istifadəçi adı müəyyən edilməlidir.")
 
         if not email:
-            raise ValueError("The given email must be set")
+            # raise ValueError("The given email must be set")
+            raise ValueError("Verilmiş e-posta müəyyən edilməlidir.")
+
+        # İstifadəçi adı yoxlanilmasi: Əgər verilmiş istifadəçi adı artıq bazada mövcuddursa,
+        if self.model.objects.filter(username=username).exists():
+            raise ValueError(_("Bu istifadəçi adı artıq götürülüb."))
+
+        # İstifadəçi bloklanmışsa, xətanı atın
+        if extra_fields.get("is_blocked"):
+            raise ValueError(_("Bloklanmış istifadəçi, hesabını yarada bilməz."))
 
         email = self.normalize_email(email)
         username = self.model.normalize_username(username)
@@ -39,11 +50,15 @@ class MyUserManager(UserManager):
             raise ValueError("Superuser must have is_staff=True.")
         if extra_fields.get("is_superuser") is not True:
             raise ValueError("Superuser must have is_superuser=True.")
+        # İstifadəçi adı yoxlanilmasi: Əgər verilmiş istifadəçi adı artıq bazada mövcuddursa,
+        if self.model.objects.filter(username=username).exists():
+            raise ValueError(_("Bu istifadəçi adı artıq götürülüb."))
 
         return self._create_user(username, email, password, **extra_fields)
 
 
 class User(AbstractUser, TrackingModel):
+
     AREA_OF_USE_CHOICES = [
         ("mekteb", "Məktəb"),
         ("universitet", "Universitet"),
@@ -51,6 +66,69 @@ class User(AbstractUser, TrackingModel):
         ("blog", "Blog"),
         ("tercume", "Tərcümə"),
         ("marketinq", "Marketinq"),
+    ]
+
+    AZERBAIJAN_REGIONS = [
+        ("absheron", "Abşeron"),
+        ("agcabedi", "Ağcabədi"),
+        ("agdam", "Ağdam"),
+        ("agdash", "Ağdaş"),
+        ("agstafa", "Ağstafa"),
+        ("agsu", "Ağsu"),
+        ("astara", "Astara"),
+        ("baku", "Bakı"),
+        ("balaken", "Balakən"),
+        ("barda", "Bərdə"),
+        ("beylagan", "Beyləqan"),
+        ("bilasuvar", "Biləsuvar"),
+        ("dashkasan", "Daşkəsən"),
+        ("fuzuli", "Füzuli"),
+        ("gadabay", "Gədəbəy"),
+        ("ganja", "Gəncə"),
+        ("goranboy", "Goranboy"),
+        ("goychay", "Göyçay"),
+        ("goygol", "Göygöl"),
+        ("hajigabul", "Hacıqabul"),
+        ("imisli", "İmişli"),
+        ("ismayilli", "İsmayıllı"),
+        ("jabrayil", "Cəbrayıl"),
+        ("jalilabad", "Cəlilabad"),
+        ("kalbajar", "Kəlbəcər"),
+        ("khachmaz", "Xaçmaz"),
+        ("khizi", "Xızı"),
+        ("khojali", "Xocalı"),
+        ("kurdamir", "Kürdəmir"),
+        ("lachin", "Laçın"),
+        ("lankaran", "Lənkəran"),
+        ("lerik", "Lerik"),
+        ("masally", "Masallı"),
+        ("mingachevir", "Mingəçevir"),
+        ("nakhchivan", "Naxçıvan"),
+        ("neftchala", "Neftçala"),
+        ("oguz", "Oğuz"),
+        ("ordubad", "Ordubad"),
+        ("qabala", "Qəbələ"),
+        ("qakh", "Qax"),
+        ("qazakh", "Qazax"),
+        ("qusar", "Qusar"),
+        ("sabirabad", "Sabirabad"),
+        ("salyan", "Salyan"),
+        ("samukh", "Samux"),
+        ("shabran", "Şabran"),
+        ("shaki", "Şəki"),
+        ("shamakhi", "Şamaxı"),
+        ("shamkir", "Şəmkir"),
+        ("shirvan", "Şirvan"),
+        ("shusha", "Şuşa"),
+        ("siazan", "Siyəzən"),
+        ("sumqayit", "Sumqayıt"),
+        ("tartar", "Tərtər"),
+        ("tovuz", "Tovuz"),
+        ("yardimli", "Yardımlı"),
+        ("yevlakh", "Yevlax"),
+        ("zangilan", "Zəngilan"),
+        ("zardab", "Zərdab"),
+        # Digər rayonları da əlavə edə bilərsiniz
     ]
 
     phone_regex = RegexValidator(
@@ -120,7 +198,20 @@ class User(AbstractUser, TrackingModel):
         max_length=20, choices=AREA_OF_USE_CHOICES, default="mekteb", blank=True
     )
 
-    # Kullanıcı kimliği için username yerine email kullanılacak
+    ## Yeni sahələr
+    daily_session = models.IntegerField(default=0, verbose_name="Günlük Sessiya")
+    is_blocked = models.BooleanField(default=False, verbose_name="Bloklanıb")
+
+    ## Yeni `location_city` sahəsi
+    location_city = models.CharField(
+        max_length=50,
+        choices=AZERBAIJAN_REGIONS,
+        blank=True,
+        null=True,
+        verbose_name="Məkan (Rayon)",
+    )
+
+    # İstifadəçi identifikasiyası üçün username əvəzinə email istifadə olunacaq
     objects = MyUserManager()
 
     EMAIL_FIELD = "email"
