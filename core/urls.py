@@ -56,7 +56,7 @@ urlpatterns = [
     # 
     # 
     ## meta_manager
-    path('api/meta/', include('meta_manager.api.urls')),  
+    path('api/meta/', include('meta.api.urls')),  
     # 
     # 
     ## OpenAPI şeması

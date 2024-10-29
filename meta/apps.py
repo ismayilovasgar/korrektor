@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class MetaManagerConfig(AppConfig):
+class MetaConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'meta_manager'
+    name = 'meta'

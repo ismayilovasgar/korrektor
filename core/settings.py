@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     "accounts",
     "contact",
     "corrections",
-    "meta_manager",
+    "meta",
     "helpers",
     
     # drf rest
