@@ -44,29 +44,26 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-
     # my app
     "accounts",
     "contact",
     "corrections",
     "meta",
     "helpers",
-    
+    "testimonials",
     # drf rest
     "rest_framework",
     "django_filters",
     "django_extensions",
     "drf_spectacular",
-    "django_celery_beat",
-    
+    # "django_celery_beat",
+    "django_cleanup.apps.CleanupConfig",
     # swagger ui
     "drf_yasg",
     # jwt token authentication
     "rest_framework_simplejwt",
-
     # jwt token blacklist
     "rest_framework_simplejwt.token_blacklist",
-
     # google auth apps
     "dj_rest_auth",
     "allauth",
@@ -220,6 +217,10 @@ USE_I18N = True
 USE_TZ = True
 
 
+# Media ImageFields
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
@@ -241,3 +242,10 @@ EMAIL_HOST_USER = config("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL")
 FRONTEND_URL = config("FRONTEND_URL")
+
+
+#! Guvenligi arttirmak
+## API’nizi yalnızca HTTPS üzerinden erişilebilir hale getirmek, iletilen verilerin korunmasını sağlar.
+# SECURE_SSL_REDIRECT = True
+# CSRF_COOKIE_SECURE = True
+# SESSION_COOKIE_SECURE = True

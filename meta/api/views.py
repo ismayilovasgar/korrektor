@@ -3,10 +3,18 @@ from rest_framework.response import Response
 from ..models import SEOModel
 from .serializers import SEOModelSerializer
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.decorators import api_view
+from rest_framework.decorators import (
+    api_view,
+    authentication_classes,
+    permission_classes,
+)
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 
 @api_view(["GET", "POST"])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 def seo_model_list(request):
     if request.method == "GET":
         seo_models = SEOModel.objects.all()
@@ -22,6 +30,8 @@ def seo_model_list(request):
 
 
 @api_view(["GET", "PUT", "PATCH", "DELETE"])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 def seo_model_detail(request, page_name):
     try:
         seo_model = SEOModel.objects.get(page_name=page_name)
