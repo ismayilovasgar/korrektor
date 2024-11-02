@@ -21,7 +21,7 @@ def send_verification_email(user):
         uid = urlsafe_base64_encode(force_bytes(user.pk))
 
         # Təsadüfi doğrulama kodunu yaradın
-        verification_code = generate_verification_code()
+        verification_code = generate_verification_code(length=6)
 
         # İstifadəçinin modelindəki verification_code sahəsini güncəlləyin
         user.verification_code = verification_code
@@ -34,8 +34,8 @@ def send_verification_email(user):
 
         try:
             send_mail(
-                subject="Email Doğrulama",
-                message=f"Lütfen hesabınızı doğrulamak için bu linke tıklayın: {verification_link}",
+                subject="Email Təsdiqləmək !",
+                message=f"Zəhmət olmazsa hesabiniz təsdiq etmək üçün bu linkə keçin: {verification_link}",
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[user.email],
                 fail_silently=False,

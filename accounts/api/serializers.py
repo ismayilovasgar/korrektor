@@ -72,7 +72,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
-        print("Yaradılan məlumatlar:", validated_data)
+        # print("Yaradılan məlumatlar:", validated_data)
         if User.objects.filter(username=validated_data["username"]).exists():
             raise serializers.ValidationError(
                 {
@@ -98,9 +98,6 @@ class RegisterSerializer(serializers.ModelSerializer):
         return data
 
 
-#
-#
-#
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User

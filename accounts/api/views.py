@@ -36,19 +36,27 @@ User = get_user_model()
 
 
 class VerifyEmailView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, uidb64, token):
         try:
             User = get_user_model()
             uid = force_str(urlsafe_base64_decode(uidb64))
             user = User.objects.get(pk=uid)
 
-            # Tokeni doğrulayın
+            # Token təsdiqləmə nəzarəti
             try:
-                # Token'i doğrulama
                 AccessToken(token)
             except TokenError:
                 return Response(
                     {"error": "geçersiz və ya süresi dolmuş token."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            # Email təsdiqləmə nəzarəti
+            if user.is_email_verified:
+                return Response(
+                    {"error": "Email artıq doğrulanıb."},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
@@ -57,17 +65,20 @@ class VerifyEmailView(APIView):
 
             user.save()
 
-            return Response({"message": "Email doğrulandı!"}, status=status.HTTP_200_OK)
+            return Response(
+                {"message": "Email təsdiq olundu!"}, status=status.HTTP_200_OK
+            )
+        #
         #
         except User.DoesNotExist:
-            logger.error("User not found with UID: %s", uid)
+            logger.error("UID ilə istifadəçi tapılmadı: %s", uid)
             return Response(
                 {"error": "İstifadəçi tapılmadı."}, status=status.HTTP_404_NOT_FOUND
             )
         except Exception as e:
-            logger.exception("Bir hata oluştu: %s", e)
+            logger.exception("Bir xəta baş verdi: %s", e)
             return Response(
-                {"error": "Bir hata oluştu."}, status=status.HTTP_400_BAD_REQUEST
+                {"error": "Bir xəta baş verdi."}, status=status.HTTP_400_BAD_REQUEST
             )
 
 
@@ -79,9 +90,7 @@ class RegisterView(generics.CreateAPIView):
             return serializer.save()  # İstifadəçini yaradın
         except Exception as e:
             print(f"User creation error: {e}")  # Xətanı konsola yazdırın
-            raise serializers.ValidationError(
-                {"detail": "İstifadəçi yaradılmadı-perform_create ."}
-            )
+            raise serializers.ValidationError({"detail": "İstifadəçi yaradılmadı."})
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -100,7 +109,7 @@ class RegisterView(generics.CreateAPIView):
 
         if user is None:
             return response.Response(
-                {"detail": "İstifadəçi yaradılmadı view-da."},
+                {"detail": "İstifadəçi yaradılmadı !"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
