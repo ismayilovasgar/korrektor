@@ -11,6 +11,7 @@ from .views import (
     UserDetailView,
     # PasswordResetConfirmView,
     CustomPasswordResetConfirmView,
+    VerifyEmailView
 )
 from django.contrib.auth.views import PasswordResetConfirmView
 
@@ -19,6 +20,9 @@ urlpatterns = [
     #
     # account
     path("register/", RegisterView.as_view(), name="register"),
+
+    path("verify-email/<uidb64>/<token>/", VerifyEmailView.as_view(), name="verify-email"),
+    
     path("login/", LoginView.as_view(), name="login"),
     path("users/", ListUserView.as_view(), name="list-user"),
     path("logout/", LogoutView.as_view(), name="logout"),

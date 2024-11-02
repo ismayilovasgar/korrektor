@@ -34,6 +34,14 @@ DEBUG = config("DEBUG", default=False, cast=bool)
 
 ALLOWED_HOSTS = []
 
+# Local URL
+LOCAL_URL = "http://localhost:8000"
+
+# Production URL (bunu öz server URL-inizlə əvəz edin)
+PRODUCTION_URL = "https://your-production-url.com"
+
+# Mühitə bağlı URL
+VERIFICATION_BASE_URL = config("VERIFICATION_BASE_URL", default=LOCAL_URL)
 
 # Application definition
 

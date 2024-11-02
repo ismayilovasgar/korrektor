@@ -211,7 +211,10 @@ class User(AbstractUser, TrackingModel):
         verbose_name="Məkan (Rayon)",
     )
 
-    # İstifadəçi identifikasiyası üçün username əvəzinə email istifadə olunacaq
+    verify = models.BooleanField(default=False, verbose_name="Təsdiqlənib")
+    verification_code = models.CharField(max_length=10, blank=True, null=True, verbose_name="Təsdiq Kodu")
+
+    ## İstifadəçi identifikasiyası üçün username əvəzinə email istifadə olunacaq
     objects = MyUserManager()
 
     EMAIL_FIELD = "email"

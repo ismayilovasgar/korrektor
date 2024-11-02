@@ -18,6 +18,9 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.http import urlsafe_base64_decode
 from django.contrib.auth.password_validation import validate_password
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -69,27 +72,35 @@ class RegisterSerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
-        # print(validated_data)
-        # if User.objects.filter(username=validated_data["username"]).exists():
-        #     raise serializers.ValidationError(
-        #         {
-        #             "username": "Bu kullanıcı adı zaten alınmış, lütfen başka bir kullanıcı adı deneyin."
-        #         }
-        #     )
+        print("Yaradılan məlumatlar:", validated_data)
+        if User.objects.filter(username=validated_data["username"]).exists():
+            raise serializers.ValidationError(
+                {
+                    "username": "Bu istifadəçi adı artıq alınmışdır, xahiş edirik başqa bir istifadəçi adı seçin."
+                }
+            )
 
-        user = User(**validated_data)
-        user.set_password(validated_data["password"])  # Şifreyi hash'le
-        user.save()
-        return user
+        try:
+            user = User(**validated_data)
+            user.set_password(validated_data["password"])  # Şifrəni hash edin
+            user.save()
+            return user
+        except Exception as e:
+            raise serializers.ValidationError(
+                {"error": "İstifadəçi yaradılarkən xəta baş verdi."}
+            )
 
     def validate(self, data):
         try:
-            validate_password(data["password"])
+            validate_password(data["password"])  # Şifrəni yoxlayır
         except ValidationError as e:
             raise serializers.ValidationError({"password_errors": list(e.messages)})
         return data
 
 
+#
+#
+#
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User

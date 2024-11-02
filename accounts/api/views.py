@@ -1,45 +1,121 @@
 from rest_framework.response import Response
 from rest_framework import generics, status, response
 from rest_framework.views import APIView
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, login
+from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import (
-    LoginSerializer,
-    UserSerializer,
-    RegisterSerializer,
-    CustomTokenObtainPairSerializer,
-    CustomTokenRefreshSerializer,
-    LogoutSerializer,
-    TokenBlacklistSerializer,
-    PasswordResetConfirmSerializer,
-    PasswordResetSerializer,
-)
+from .serializers import *
+from django.contrib.auth.tokens import default_token_generator
+from django.utils import timezone
+
+# (
+# LoginSerializer,
+# UserSerializer,
+# RegisterSerializer,
+# CustomTokenObtainPairSerializer,
+# CustomTokenRefreshSerializer,
+# LogoutSerializer,
+# TokenBlacklistSerializer,
+# PasswordResetConfirmSerializer,
+# PasswordResetSerializer,
+# )
+from rest_framework_simplejwt.exceptions import TokenError
 from ..models import User
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from ..utils.send_password_reset_email import send_password_reset_email
+from ..utils.send_password_reset_email import *
+from ..utils.send_verify_email import send_verification_email
 from django.contrib.auth.views import PasswordResetConfirmView
-from django.utils.http import urlsafe_base64_decode
-from rest_framework.exceptions import ValidationError
-from django.contrib.auth.tokens import default_token_generator
-from django.utils import timezone
-from django.contrib.auth import login
+from django.utils.encoding import force_str
+import logging
+
+# Logger yarat
+logger = logging.getLogger(__name__)
+
+User = get_user_model()
+
+
+class VerifyEmailView(APIView):
+    def get(self, request, uidb64, token):
+        try:
+            User = get_user_model()
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+
+            # Tokeni doğrulayın
+            try:
+                # Token'i doğrulama
+                AccessToken(token)
+            except TokenError:
+                return Response(
+                    {"error": "geçersiz və ya süresi dolmuş token."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            user.is_active = True
+            user.verify = True
+
+            user.save()
+
+            return Response({"message": "Email doğrulandı!"}, status=status.HTTP_200_OK)
+        #
+        except User.DoesNotExist:
+            logger.error("User not found with UID: %s", uid)
+            return Response(
+                {"error": "İstifadəçi tapılmadı."}, status=status.HTTP_404_NOT_FOUND
+            )
+        except Exception as e:
+            logger.exception("Bir hata oluştu: %s", e)
+            return Response(
+                {"error": "Bir hata oluştu."}, status=status.HTTP_400_BAD_REQUEST
+            )
 
 
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
 
+    def perform_create(self, serializer):
+        try:
+            return serializer.save()  # İstifadəçini yaradın
+        except Exception as e:
+            print(f"User creation error: {e}")  # Xətanı konsola yazdırın
+            raise serializers.ValidationError(
+                {"detail": "İstifadəçi yaradılmadı-perform_create ."}
+            )
+
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
 
-        # Hataları otomatik olarak raise eder (return gerekmez)
-        serializer.is_valid(raise_exception=True)
+        # Xətaları avtomatik olaraq raise edir
+        try:
+            serializer.is_valid(raise_exception=True)
+        except serializers.ValidationError as e:
+            return response.Response(
+                {"detail": "Validasiya xətası", "errors": e.detail},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
-        self.perform_create(serializer)  # Kullanıcıyı kaydet
-        headers = self.get_success_headers(serializer.data)  # Başlık eklemek istersen
+        # İstifadəçini qeyd edin
+        user = self.perform_create(serializer)
+
+        if user is None:
+            return response.Response(
+                {"detail": "İstifadəçi yaradılmadı view-da."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # E-poçt doğrulama linkini göndərin
+        send_verification_email(user)
+
+        # Başlıq əlavə etmək istəsəniz
+        headers = self.get_success_headers(serializer.data)
 
         return response.Response(
-            serializer.data, status=status.HTTP_201_CREATED, headers=headers
+            {
+                "detail": "Qeydiyyat uğurla başa çatdı, e-poçt doğrulama linki göndərildi!"
+            },
+            status=status.HTTP_201_CREATED,
+            headers=headers,
         )
 
 
