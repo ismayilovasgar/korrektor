@@ -54,7 +54,7 @@ class VerifyEmailView(APIView):
                 )
 
             # Email təsdiqləmə nəzarəti
-            if user.is_email_verified:
+            if user.verify:
                 return Response(
                     {"error": "Email artıq doğrulanıb."},
                     status=status.HTTP_400_BAD_REQUEST,
