@@ -29,7 +29,6 @@ from django.contrib.auth.views import PasswordResetConfirmView
 from django.utils.encoding import force_str
 import logging
 
-# Logger yarat
 logger = logging.getLogger(__name__)
 
 User = get_user_model()

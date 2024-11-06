@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.utils import timezone
 from ..models import Contact
 
 
@@ -8,32 +9,12 @@ class ContactSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Contact
-        fields = [
-            "full_name",
-            "email",
-            "content",
-            "created_at",
-            "updated_at",
-        ]
+        fields = ["full_name", "email", "content", "created_at", "updated_at"]
 
     def get_created_at(self, obj):
-        return obj.created_at.strftime("%Y-%m-%d,%H:%M:%S")
+        # UTC zamanını yerli vaxta çeviririk
+        return timezone.localtime(obj.created_at).strftime("%Y-%m-%d %H:%M:%S")
 
     def get_updated_at(self, obj):
-        return obj.updated_at.strftime("%Y-%m-%d, %H:%M:%S")
-
-    # def to_representation(self, instance):
-    #     representation = super().to_representation(instance)
-
-    ##    <== Customize the representation if needed ==>
-    #     return {
-    #         "Contact Information": {
-    #             "ID": representation["id"],
-    #             "Name": representation["name"],
-    #             "Surname": representation["surname"],
-    #             "Email": representation["email"],
-    #             "Title": representation["title"],
-    #             "Content": representation["content"],
-    #             "Created At": representation["created_at"],
-    #         }
-    #     }
+        # UTC zamanını yerli vaxta çeviririk
+        return timezone.localtime(obj.updated_at).strftime("%Y-%m-%d %H:%M:%S")

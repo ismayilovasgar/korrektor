@@ -217,7 +217,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = config("TIME_ZONE", default="UTC")
+# TIME_ZONE = config("TIME_ZONE", default="Asia/Baku")
+TIME_ZONE = "Asia/Baku"
 
 USE_I18N = True
 
