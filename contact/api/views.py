@@ -7,30 +7,45 @@ from rest_framework.permissions import AllowAny
 from django.conf import settings
 
 
+def send_message(to_email, subject, message):
+    """
+    Ümumi bir mesaj göndərmə funksiyası.
+    Həm istifadəçiyə, həm də sizin e-poçt ünvanınıza mesaj göndərə bilərsiniz.
+    """
+    try:
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[to_email],
+        )
+    except Exception as e:
+        raise Exception(f"E-poçt göndərilərkən xəta baş verdi: {str(e)}")
+
+
 @api_view(["POST"])
 def create_contact(request):
-    permission_classes = [
-        AllowAny,
-    ]
+    permission_classes = [AllowAny]
 
-    # ContactSerializer ilə verilənləri yoxlayırıq
     try:
+        # ContactSerializer ilə verilənləri yoxlayırıq
         serializer = ContactSerializer(data=request.data)
         if serializer.is_valid():
-            # Verini qeyd et
             contact = serializer.save()
 
             try:
-                # E-poçt göndərmə əməliyyatı - İstifadəçinin e-poçt ünvanına
-                send_mail(
-                    # E-poçtun mövzusu
-                    subject=f"Mesajınız Alındı: {contact.full_name}",
-                    # Mesajın məzmunu
-                    message=f"Salam {contact.full_name},\n\nMesajınız uğurla alındı. Məzmunu:\n\n{contact.content}",
-                    # Göndərən e-poçt ünvanı, settings.py-dən götürülür
-                    from_email=settings.DEFAULT_FROM_EMAIL,
-                    # İstifadəçinin e-poçt ünvanına göndəriləcək
-                    recipient_list=[contact.email],
+                # 1. İstifadəçinin mesajını sizin e-poçt ünvanınıza göndəririk
+                send_message(
+                    settings.DEFAULT_FROM_EMAIL,
+                    f"Yeni Mesaj: {contact.full_name}",
+                    f"Göndərən: {contact.full_name}\nMesaj: {contact.content}",
+                )
+
+                # 2. İstifadəçiyə məlumat mesajı göndəririk
+                send_message(
+                    contact.email,
+                    f"Mesajınız Alındı: {contact.full_name}",
+                    f"Salam {contact.full_name},\n\nMesajınız uğurla alındı.",
                 )
 
                 return Response(
@@ -48,9 +63,9 @@ def create_contact(request):
             {"error": "Göndərilən məlumatlar düzgün deyil."},
             status=status.HTTP_400_BAD_REQUEST,
         )
-    
+
     except Exception as e:
-        # Serializatoru işləyərkən baş verən xətaları idarə edir
+        # Serializer işləyərkən baş verən xətaları idarə edirik
         return Response(
             {"error": f"Xəta baş verdi: {str(e)}"},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,

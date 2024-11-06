@@ -11,10 +11,3 @@ class Contact(TrackingModel):
 
     def __str__(self):
         return f"{self.full_name} | {self.email}"
-
-    # def save(self, *args, **kwargs):
-    #     now = datetime.now().strftime("%Y-%m-%d, %H:%M:%S")
-    #     if not self.created_at:
-    #         self.created_at = now   # İlk yaradıldığında created_at qeyd edilir
-    #     self.updated_at = now       # Hər yeniləmə zamanı updated_at yenilənir
-    #     super().save(*args, **kwargs)
