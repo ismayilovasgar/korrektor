@@ -1,5 +1,5 @@
 from django.core.mail import send_mail
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import ContactSerializer
@@ -24,9 +24,8 @@ def send_message(to_email, subject, message):
 
 
 @api_view(["POST"])
+@permission_classes([AllowAny])
 def create_contact(request):
-    permission_classes = [AllowAny]
-
     try:
         # ContactSerializer ilə verilənləri yoxlayırıq
         serializer = ContactSerializer(data=request.data)
