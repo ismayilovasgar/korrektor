@@ -80,6 +80,8 @@ INSTALLED_APPS = [
     "allauth.socialaccount.providers.google",
     "dj_rest_auth.registration",
     "rest_framework.authtoken",
+    # Cors
+    'corsheaders',
 ]
 
 ## <== google auth apps ==>
@@ -158,6 +160,7 @@ MIDDLEWARE = [
     #
     ## <== Google Login ==>
     "allauth.account.middleware.AccountMiddleware",
+    "corsheaders.middleware.CorsMiddleware"
 ]
 
 ROOT_URLCONF = "core.urls"
@@ -257,3 +260,18 @@ FRONTEND_URL = config("FRONTEND_URL")
 # SECURE_SSL_REDIRECT = True
 # CSRF_COOKIE_SECURE = True
 # SESSION_COOKIE_SECURE = True
+SITE_ID = 2
+
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend'
+]
+
+
+GOOGLE_CLIENT_ID = config("GOOGLE_CLIENT_ID")
+
+
+CORS_ALLOW_ALL_ORIGINS = True 

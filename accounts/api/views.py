@@ -272,3 +272,55 @@ class CustomPasswordResetConfirmView(APIView):
 # class CustomPasswordResetConfirmView(PasswordResetConfirmView):
 #     template_name = "password_reset_confirm.html"
 #     success_url = '/login/'
+
+
+class GoogleLoginView(APIView):
+    def post(self, request):
+        try:
+            # Get the ID token from the request
+            token = request.data.get('token')
+            
+            # Verify the token
+            idinfo = id_token.verify_oauth2_token(
+                token, 
+                requests.Request(), 
+                settings.GOOGLE_CLIENT_ID
+            )
+            print(idinfo)
+            # Get user info from token
+            email = idinfo['email']
+            first_name = idinfo.get('given_name', '')
+            last_name = idinfo.get('family_name', '')
+
+            # Get or create user
+            try:
+                user = User.objects.get(email=email)
+            except User.DoesNotExist:
+                user = User.objects.create_user(
+                    email=email,
+                    username=email,  # You might want to modify this
+                    first_name=first_name,
+                    last_name=last_name,
+                    is_active=True,
+                    verify=True  # Since Google has verified the email
+                )
+
+            # Create JWT tokens
+            refresh = RefreshToken.for_user(user)
+            refresh['username'] = user.username
+            refresh['first_name'] = user.first_name
+            refresh['last_name'] = user.last_name
+
+            return Response({
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+            }, status=status.HTTP_200_OK)
+
+        except ValueError:
+            return Response({
+                'error': 'Invalid token'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({
+                'error': str(e)
+            }, status=status.HTTP_400_BAD_REQUEST)
